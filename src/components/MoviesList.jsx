@@ -1,17 +1,13 @@
 import { Link } from 'react-router-dom';
-import { MoviesItem } from './MoviesItem';
 
 const MoviesList = ({ movies }) => {
   return (
     <ul className="style-film">
-      {movies.map(movie => {
-        <MoviesItem key={movie.id} title={movie.title} poster={movie.poster} />;
-        return (
-          <Link to={`/movies/${movie.id}`}>
-            {movie.title} {movie.poster_path}
-          </Link>
-        );
-      })}
+      {movies.map(({ id, title, poster, poster_path }) => (
+        <li key={id} title={title} poster={poster}>
+          <Link to={`/movies/${id}`}>{title}</Link>
+        </li>
+      ))}
     </ul>
   );
 };
