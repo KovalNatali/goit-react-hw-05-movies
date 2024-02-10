@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { fetchMovies } from '../../pages/Api';
 import MoviesList from 'components/MoviesList';
-// import styles from './home.module.css';
+import styles from './home.module.css';
 
-export default function Home() {
+const Home = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getQuizzes = async () => {
@@ -16,7 +16,7 @@ export default function Home() {
         setMovies(results);
       } catch (error) {
         console.log(error);
-        // setError(error.message);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
@@ -26,8 +26,10 @@ export default function Home() {
 
   return (
     <>
-      <MoviesList movies={movies} />
+      {error && <p className={styles.error}>{error}</p>}
       {loading && <p>...Loading</p>}
+      {Boolean(movies.length) && <MoviesList movies={movies} />}
     </>
   );
-}
+};
+export default Home;

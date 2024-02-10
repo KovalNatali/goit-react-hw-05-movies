@@ -1,11 +1,15 @@
-import MainMenuMovie from 'components/MainMenuMovie/MainMenuMovie';
 import { Outlet } from 'react-router-dom';
+import { Suspense } from 'react';
+import MainMenuMovie from 'components/MainMenuMovie/MainMenuMovie';
+import Loader from 'Loader';
 
 const SharedLayout = () => {
   return (
     <>
       <MainMenuMovie />
-      <Outlet />
+      <Suspense fallback={<Loader />}>
+        <Outlet />
+      </Suspense>
     </>
   );
 };

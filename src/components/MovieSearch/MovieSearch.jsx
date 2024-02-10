@@ -1,79 +1,15 @@
-// import { useEffect, useState } from 'react';
-// import MovieSearchForm from './MovieSearchForm/MovieSearchForm';
-// import { useParams } from 'react-router-dom';
-// import MovieSearchList from './MovieSearchList/MovieSearchList';
-// import { getMovieById } from 'pages/Api';
-
-// import styles from './movie-search.module.css';
-// import Button from 'components/Button/button';
-
-// const MovieSearch = () => {
-//   const [search, setSearch] = useState('');
-//   const [posts, setPosts] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const [page, setPage] = useState(1);
-//   const { movieId } = useParams();
-//   useEffect(() => {
-//     const fetchPosts = async () => {
-//       try {
-//         setLoading(true);
-//         const posts = await getMovieById(movieId);
-//         setPosts(posts);
-//       } catch (error) {
-//         setError(error.message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     fetchPosts();
-//   }, [movieId]);
-
-//   const handleSearch = ({ search }) => {
-//     setSearch(search);
-//     setPosts([]);
-//     setPage(1);
-//   };
-
-//   const loadMore = () => setPage(prevPage => prevPage + 1);
-
-//   const isPosts = Boolean(posts.length);
-
-//   return (
-//     <>
-//       <MovieSearchForm onSubmit={handleSearch} />
-//       {error && <p className={styles.error}>{error}</p>}
-//       {loading && <p>...Loading</p>}
-//       {isPosts && <MovieSearchList items={posts} />}
-//       {isPosts && (
-//         <div className={styles.loadMoreWrapper}>
-//           <Button onClick={loadMore} type="button">
-//             Load more
-//           </Button>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-// export default MovieSearch;
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import Button from 'components/Button/button';
-
-// import PostsSearchList from './PostsSearchList/PostsSearchList';
-// import PostsSearchForm from './PostsSearchForm/PostsSearchForm';
+import { searchMovies } from 'pages/Api';
 import MovieSearchForm from './MovieSearchForm/MovieSearchForm';
+import MoviesList from 'components/MoviesList';
+import Button from 'components/Button/Button';
 
-import MovieSearchList from './MovieSearchList/MovieSearchList';
-import { getMovieById } from 'pages/Api';
-import { fetchMovies } from 'pages/Api';
 import styles from './movie-search.module.css';
 
 const MovieSearch = () => {
-  // const [search, setSearch] = useState("");
-  // const [page, setPage] = useState(1);
-  const [posts, setPosts] = useState([]);
+  const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -83,11 +19,13 @@ const MovieSearch = () => {
   const page = searchParams.get('page');
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchMovies = async () => {
       try {
         setLoading(true);
-        const { results } = await fetchMovies();
-        setPosts(results);
+        const { data } = await searchMovies(search, page);
+        setMovies(prevMovies =>
+          data.results?.length ? [...prevMovies, ...data.results] : prevMovies
+        );
       } catch (error) {
         setError(error.message);
       } finally {
@@ -96,28 +34,26 @@ const MovieSearch = () => {
     };
 
     if (search) {
-      fetchPosts();
+      fetchMovies();
     }
   }, [search, page]);
 
-  const handleSearch = ({ search }) => {
-    // setSearch(search);
+  const handalSearch = ({ search }) => {
     setSearchParams({ search, page: 1 });
-    // setPage(1);
-    setPosts([]);
+    setMovies([]);
   };
 
   const loadMore = () => setSearchParams({ search, page: Number(page) + 1 });
 
-  const isPosts = Boolean(posts.length);
-
+  const isMovies = Boolean(movies.length);
+  const isMoreMovies = Boolean(movies.length % 20 === 0);
   return (
     <>
-      <MovieSearchForm onSubmit={handleSearch} />
+      <MovieSearchForm onSubmit={handalSearch} />
       {error && <p className={styles.error}>{error}</p>}
       {loading && <p>...Loading</p>}
-      {isPosts && <MovieSearchList items={posts} />}
-      {isPosts && (
+      {isMovies && <MoviesList movies={movies} />}
+      {isMovies && isMoreMovies && (
         <div className={styles.loadMoreWrapper}>
           <Button onClick={loadMore} type="button">
             Load more
@@ -130,37 +66,76 @@ const MovieSearch = () => {
 
 export default MovieSearch;
 
-// import { useEffect, useState } from 'react';
-// import { fetchMovies } from '../../pages/Api';
-// // import MoviesList from 'components/MoviesList';
-// // import styles from './home.module.css';
-// import MovieSearchList from './MovieSearchList/MovieSearchList';
+// class MovieSearch extends Component {
+//   state = {
+//     search: '',
+//     movies: [],
+//     loading: false,
+//     error: null,
+//     page: 1,
+//   };
 
-// export default function MovieSearch() {
-//   const [movies, setMovies] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   // const [error, setError] = useState(null);
+//   async componentDidUpdate(prevProps, prevState) {
+//     const { search, page } = this.state;
+//     if (search && (search !== prevState.search || page !== prevState.page)) {
+//       this.fetchMovies();
+//     }
+//   }
 
-//   useEffect(() => {
-//     const getQuizzes = async () => {
-//       try {
-//         setLoading(true);
-//         const { results } = await fetchMovies();
-//         setMovies(results);
-//       } catch (error) {
-//         console.log(error);
-//         // setError(error.message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     getQuizzes();
-//   }, []);
+//   async fetchMovies() {
+//     const { search, page } = this.state;
+//     try {
+//       this.setState({
+//         loading: true,
+//       });
+//       const { data } = await searchMovies(search, page);
+//       this.setState(({ movies }) => ({
+//         movies: data.results?.length ? [...movies, ...data.results] : [],
+//         //   movies: data.results?.length ? data.results : [],
+//       }));
+//     } catch (error) {
+//       this.setState({
+//         error: error.message,
+//       });
+//     } finally {
+//       this.setState({
+//         loading: false,
+//       });
+//     }
+//   }
 
-//   return (
-//     <>
-//       <MovieSearchList movies={movies} />
-//       {loading && <p>...Loading</p>}
-//     </>
-//   );
+//   handalSearch = ({ search }) => {
+//     this.setState({
+//       search,
+//       movies: [],
+//       page: 1,
+//     });
+//   };
+
+//   loadMore = () => {
+//     this.setState(({ page }) => ({ page: page + 1 }));
+//   };
+
+//   render() {
+//     const { handalSearch, loadMore } = this;
+//     const { movies, loading, error } = this.state;
+//     const isMovies = Boolean(movies.length);
+//     const isMoreMovies = Boolean(movies.length % 20 === 0);
+//     return (
+//       <>
+//         <MovieSearchForm onSubmit={handalSearch} />
+//         {error && <p className={styles.error}>{error}</p>}
+//         {loading && <p>...Loading</p>}
+//         {isMovies && <MoviesList movies={movies} />}
+//         {isMovies && isMoreMovies && (
+//           <div className={styles.loadMoreWrapper}>
+//             <Button onClick={loadMore} type="button">
+//               Load more
+//             </Button>
+//           </div>
+//         )}
+//       </>
+//     );
+//   }
 // }
+// export default MovieSearch;
