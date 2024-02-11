@@ -47,19 +47,17 @@ const MovieSearch = () => {
   const loadMore = () => setSearchParams({ search, page: Number(page) + 1 });
 
   const isMovies = Boolean(movies.length);
-  // const isMoreMovies = Boolean(movies.length % 20 === 0);
+  const isMoreMovies = Boolean(movies.length % 20 === 0);
   return (
     <>
       <MovieSearchForm onSubmit={handalSearch} />
       {error && <p className={styles.error}>{error}</p>}
       {loading && <p>...Loading</p>}
       {isMovies && <MoviesList movies={movies} />}
-      {isMovies && (
-        <div className={styles.loadMoreWrapper}>
-          <Button className="button" onClick={loadMore} type="button">
-            Load more
-          </Button>
-        </div>
+      {isMovies && isMoreMovies && (
+        <Button className="button" onClick={loadMore} type="button">
+          Load more
+        </Button>
       )}
     </>
   );
