@@ -56,7 +56,7 @@ const MovieSearch = () => {
       {isMovies && <MoviesList movies={movies} />}
       {isMovies && isMoreMovies && (
         <div className={styles.loadMoreWrapper}>
-          <Button className={styles.button} onClick={loadMore} type="button">
+          <Button className="button" onClick={loadMore} type="button">
             Load more
           </Button>
         </div>
