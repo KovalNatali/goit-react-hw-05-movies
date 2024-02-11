@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { searchMovies } from 'pages/Api';
 import MovieSearchForm from './MovieSearchForm/MovieSearchForm';
 import MoviesList from 'components/MoviesList';
+// import Button from 'components/Button/Button';
 import Button from 'components/Button/Button';
 
 import styles from './movie-search.module.css';
@@ -54,11 +55,12 @@ const MovieSearch = () => {
       {loading && <p>...Loading</p>}
       {isMovies && <MoviesList movies={movies} />}
       {isMovies && isMoreMovies && (
-        <div className={styles.loadMoreWrapper}>
-          <Button onClick={loadMore} type="button">
-            Load more
-          </Button>
-        </div>
+        <Button onClick={loadMore} type="button">
+          Load more
+        </Button>
+        //   <div className={styles.loadMoreWrapper}>
+
+        // </div>
       )}
     </>
   );
