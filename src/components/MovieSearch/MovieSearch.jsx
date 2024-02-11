@@ -49,7 +49,7 @@ const MovieSearch = () => {
   const isMovies = Boolean(movies.length);
   const isMoreMovies = Boolean(movies.length % 20 === 0);
   return (
-    <div>
+    <>
       <MovieSearchForm onSubmit={handalSearch} />
       {error && <p className={styles.error}>{error}</p>}
       {loading && <p>...Loading</p>}
@@ -61,7 +61,7 @@ const MovieSearch = () => {
           </Button>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
